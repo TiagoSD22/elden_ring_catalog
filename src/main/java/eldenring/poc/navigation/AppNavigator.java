@@ -1,36 +1,38 @@
 package eldenring.poc.navigation;
 
 import javafx.scene.Node;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class AppNavigator {
-    private final BorderPane root;
+    private final StackPane centerContainer;
     private final Deque<Node> backStack = new ArrayDeque<>();
 
-    public AppNavigator(BorderPane root) {
-        this.root = root;
+    public AppNavigator(StackPane centerContainer) {
+        this.centerContainer = centerContainer;
     }
 
     public void setCenter(Node node) {
-        Node current = root.getCenter();
+        Node current = null;
+        if (!centerContainer.getChildren().isEmpty()) {
+            current = centerContainer.getChildren().get(0);
+        }
         if (current != null) {
             backStack.push(current);
         }
-        root.setCenter(node);
+        centerContainer.getChildren().setAll(node);
     }
 
     public void replaceCenter(Node node) {
-        root.setCenter(node);
+        centerContainer.getChildren().setAll(node);
     }
 
     public void goBack() {
         if (!backStack.isEmpty()) {
             Node node = backStack.pop();
-            root.setCenter(node);
+            centerContainer.getChildren().setAll(node);
         }
     }
 }
-
