@@ -1,0 +1,151 @@
+/* Make the BaseScreen's ScrollPane transparent so the viewport doesn't show a white background */
+.items-scroll {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.items-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.items-scroll .content {
+    -fx-background-color: transparent;
+}
+
+/* Screen content wrapper - screens should apply this class to their root/content node. */
+.screen-content {
+    -fx-padding: 0 12 12 12; /* top padding handled dynamically by the content container to match header height */
+}
+
+/* Items flow layout */
+.items-flow {
+    -fx-padding: 12; /* content padding moved to .screen-content */
+    -fx-hgap: 16;
+    -fx-vgap: 16;
+    -fx-background-color: transparent; /* allow decorative background to show through */
+}
+
+/* Card wrapper to control spacing in the flow */
+.card-wrapper {
+    -fx-padding: 0;
+}
+
+/* Item card styling */
+.item-card {
+    -fx-background-color: #1b1b1b; /* dark card */
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #333;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 6, 0.5, 0, 2);
+    -fx-alignment: center;
+}
+
+.item-card:hover {
+    -fx-border-color: #5a5a5a;
+    -fx-cursor: hand;
+    -fx-scale-x: 1.01;
+    -fx-scale-y: 1.01;
+}
+
+.item-image {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 4, 0.3, 0, 2);
+}
+
+.item-name {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+
+/* Pagination controls */
+.pagination-box {
+    -fx-padding: 10 12 12 12;
+    -fx-background-color: transparent;
+}
+
+.pagination-button {
+    -fx-background-color: #2b2b2b;
+    -fx-text-fill: white;
+    -fx-border-color: #444;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 6 12 6 12;
+}
+
+.pagination-button:disabled {
+    -fx-opacity: 0.5;
+}
+
+.page-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* Loading and error labels */
+.loading-label {
+    -fx-text-fill: #ddd;
+    -fx-font-style: italic;
+}
+
+.error-label {
+    -fx-text-fill: #ff8080;
+    -fx-font-weight: bold;
+}
+
+/* Scrollbar styling targeted to BaseScreen's ScrollPane (class items-scroll) */
+.items-scroll .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-padding: 0 2 0 2; /* small padding around the bar */
+    -fx-pref-width: 12; /* overall bar width */
+}
+
+.items-scroll .scroll-bar:vertical .track {
+    -fx-background-color: transparent; /* no visible track */
+}
+
+.items-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(60,60,60,0.9); /* dark gray thumb */
+    -fx-background-insets: 2; /* inset so thumb doesn't touch edges */
+    -fx-background-radius: 8; /* rounded thumb */
+    -fx-pref-width: 8; /* thumb width */
+    -fx-pref-height: 40; /* minimal thumb height */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 4, 0.3, 0, 1);
+}
+
+.items-scroll .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: rgba(100,100,100,0.95);
+}
+
+/* hide the increment/decrement arrows to give a cleaner look */
+.items-scroll .scroll-bar .increment-button,
+.items-scroll .scroll-bar .decrement-button {
+    -fx-opacity: 0;
+    -fx-padding: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+}
+
+/* horizontal scrollbar styling (similar, but limited height) */
+.items-scroll .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-padding: 2 0 2 0;
+    -fx-pref-height: 12;
+}
+
+.items-scroll .scroll-bar:horizontal .track {
+    -fx-background-color: transparent;
+}
+
+.items-scroll .scroll-bar:horizontal .thumb {
+    -fx-background-color: rgba(60,60,60,0.9);
+    -fx-background-insets: 2;
+    -fx-background-radius: 8;
+    -fx-pref-height: 8;
+    -fx-pref-width: 40;
+}
+
+.items-scroll .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: rgba(100,100,100,0.95);
+}
