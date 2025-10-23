@@ -1,0 +1,58 @@
+.tab-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
+
+/* Header area gets a dark translucent overlay to improve readability over the background image */
+.tab-pane .tab-header-area {
+    -fx-padding: 6 8 6 8; /* give some vertical spacing inside header */
+    -fx-background-insets: 0;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, rgba(0,0,0,0.78), rgba(0,0,0,0.62));
+    -fx-border-color: rgba(255,255,255,0.06);
+    -fx-border-width: 0 0 1 0; /* subtle bottom divider */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 6, 0.5, 0, 2);
+}
+
+/* Add a subtle textured overlay by stacking a very faint diagonal gradient on top */
+.tab-pane .tab-header-background {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.02) 100%), linear-gradient(from 0% 0% to 0% 100%, rgba(0,0,0,0.45), rgba(0,0,0,0.6));
+    -fx-background-insets: 0, 0;
+}
+
+/* Tab labels -- ensure they are readable */
+.tab-pane .tab-label, .tab-pane .tab .tab-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 4 8 4 8;
+}
+
+.tab-pane .tab {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* Selected tab gets a subtle highlight */
+.tab-pane .tab:selected {
+    -fx-background-color: rgba(255,255,255,0.06);
+    -fx-background-insets: 0;
+    -fx-border-radius: 4 4 0 0;
+    -fx-background-radius: 4 4 0 0;
+}
+
+/* Tab content area remains transparent and minimal height (we manage content separately) */
+.tab-pane .tab-content-area {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-min-height: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+}
+
+/* Ensure tab headers themselves don't add extra spacing */
+.tab-pane .tab {
+    -fx-padding: 0 8 0 8; /* small horizontal padding for tab label */
+}
