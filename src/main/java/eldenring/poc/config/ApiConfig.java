@@ -4,7 +4,7 @@ package eldenring.poc.config;
  * Centralized API configuration.
  */
 public final class ApiConfig {
-    private static final String BASE_URL = "https://eldenring.fanapis.com/api";
+    private static final String BASE_URL = "https://eldenring.wiki.fextralife.com";
 
     private ApiConfig() { }
 
