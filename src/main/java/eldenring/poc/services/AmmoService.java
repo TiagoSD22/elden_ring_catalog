@@ -21,10 +21,8 @@ public class AmmoService {
     private static final String CACHE_KEY_PAGE_PREFIX = "ammo/page/";
 
     private final AmmoScraper scraper = new AmmoScraper();
-
-    // Cache for storing ammo data
-    // Key format: "ammo/page/{pageSize}/{pageNumber}" for paginated data
-    private final Cache<String, Object> cache = Caffeine.newBuilder()
+    
+    private static final Cache<String, Object> cache = Caffeine.newBuilder()
             .expireAfterWrite(30, TimeUnit.MINUTES)
             .maximumSize(100)
             .build();
@@ -112,9 +110,8 @@ public class AmmoService {
     }
 
     /**
-     * Builds a cache key for a specific page with a given page size.
+     * Builds a cache key for a specific page.
      *
-     * @param pageSize Number of items per page
      * @param pageNumber Page number (0-based)
      * @return Cache key in format "ammo/page/{pageNumber}"
      */
