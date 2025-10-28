@@ -5,8 +5,6 @@ import eldenring.poc.models.AmmoBase;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -20,9 +18,13 @@ import java.util.logging.Logger;
  * Web scraper for extracting ammo information from Fextralife wiki.
  * Scrapes the "Arrows and Bolts" gallery page.
  */
-public class AmmoScraper {
+public class AmmoScraper extends BaseScraper {
     private static final Logger LOGGER = Logger.getLogger(AmmoScraper.class.getName());
     private static final String AMMO_PAGE_URL = ApiConfig.getBaseUrl() + "/Arrows+and+Bolts";
+
+    public AmmoScraper() {
+        super(LOGGER);
+    }
 
     /**
      * Scrapes all ammo items from the Fextralife wiki gallery.
@@ -34,17 +36,9 @@ public class AmmoScraper {
         WebDriver driver = null;
 
         try {
-            LOGGER.info("Starting ammo scraping from: " + AMMO_PAGE_URL);
+            logger.info("Starting ammo scraping from: " + AMMO_PAGE_URL);
 
-            // Setup Chrome driver with headless mode
-            ChromeOptions options = new ChromeOptions();
-            options.addArguments("--headless");
-            options.addArguments("--disable-gpu");
-            options.addArguments("--no-sandbox");
-            options.addArguments("--disable-dev-shm-usage");
-            options.addArguments("--window-size=1920,1080");
-
-            driver = new ChromeDriver(options);
+            driver = createWebDriver();
             driver.get(AMMO_PAGE_URL);
 
             // Wait for page to load
@@ -66,7 +60,7 @@ public class AmmoScraper {
                 By.xpath("//div[contains(@class, 'tabcontent') and contains(@class, '1-tab')]")
             ));
 
-            LOGGER.info("Tab content loaded, extracting items...");
+            logger.info("Tab content loaded, extracting items...");
 
             // Find all gallery rows
             List<WebElement> galleryRows = tabContent.findElements(By.cssSelector("div.row"));
@@ -100,23 +94,21 @@ public class AmmoScraper {
                         if (name != null && !name.isEmpty() && fullImageUrl != null && !fullImageUrl.isEmpty()) {
                             AmmoBase ammo = new AmmoBase(name, fullImageUrl);
                             ammos.add(ammo);
-                            LOGGER.fine("Scraped ammo: " + name + " with image: " + fullImageUrl);
+                            logger.fine("Scraped ammo: " + name + " with image: " + fullImageUrl);
                         }
 
                     } catch (Exception e) {
-                        LOGGER.log(Level.WARNING, "Failed to extract ammo from wiki_link element", e);
+                        logger.log(Level.WARNING, "Failed to extract ammo from wiki_link element", e);
                     }
                 }
             }
 
-            LOGGER.info("Successfully scraped " + ammos.size() + " ammo items");
+            logger.info("Successfully scraped " + ammos.size() + " ammo items");
 
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to scrape ammos", e);
+            logger.log(Level.SEVERE, "Failed to scrape ammos", e);
         } finally {
-            if (driver != null) {
-                driver.quit();
-            }
+            quitDriver(driver);
         }
 
         return ammos;
