@@ -1,0 +1,46 @@
+package eldenring.poc.models;
+
+import java.io.Serializable;
+
+/**
+ * Basic armor information scraped from the wiki.
+ * Contains only image and title for the listing view.
+ */
+public class ArmorBase implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private String title;
+    private String image;
+
+    public ArmorBase() {}
+
+    public ArmorBase(String title, String image) {
+        this.title = title;
+        this.image = image;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    @Override
+    public String toString() {
+        return "ArmorBase{" +
+                "title='" + title + '\'' +
+                ", image='" + image + '\'' +
+                '}';
+    }
+}
+
