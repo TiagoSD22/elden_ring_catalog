@@ -1,119 +1,37 @@
 package eldenring.poc.screens;
 
-import javafx.application.Platform;
-import javafx.scene.Node;
+import eldenring.poc.models.AmmoBase;
 import eldenring.poc.navigation.AppNavigator;
-import eldenring.poc.models.Ammo;
 import eldenring.poc.services.AmmoService;
+import javafx.scene.Node;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AmmoScreen extends BaseScreen {
+/**
+ * Screen for displaying ammo items with pagination.
+ * Extends BaseListScreen to leverage common pagination logic.
+ */
+public class AmmoScreen extends BaseListScreen<AmmoBase> {
     private static final Logger LOGGER = Logger.getLogger(AmmoScreen.class.getName());
-
-    private final AppNavigator navigator;
-    private final AmmoService service = new AmmoService();
-    private final Map<Integer, List<Ammo>> pageCache = new HashMap<>();
-    private int currentPage = 0;
+    private AmmoService service;
 
     public AmmoScreen(AppNavigator navigator) {
-        super();
-        this.navigator = navigator;
-
-        // Use paginationBox from BaseScreen
-        this.setBottom(paginationBox);
-
-        // Wire base pagination buttons to local handlers
-        setOnPrevious(e -> loadPreviousPage());
-        setOnNext(e -> loadNextPage());
-
-        // Load initial page
-        loadPage(0);
+        super(navigator, LOGGER, "ammos");
     }
 
-    private void loadPage(int page) {
-        // Check if page is already cached
-        if (pageCache.containsKey(page)) {
-            List<Ammo> cachedList = pageCache.get(page);
-            displayAmmos(cachedList);
-            currentPage = page;
-            updatePaginationControls();
-            return;
+    @Override
+    protected List<AmmoBase> fetchItems(int limit, int page) {
+        if (service == null) {
+            service = new AmmoService();
         }
-
-        // Show loading
-        contentFlow.getChildren().clear();
-        contentFlow.getChildren().add(createLoadingLabel("Loading ammos"));
-        setNextDisabled(true);
-
-        // Fetch data in background thread
-        new Thread(() -> {
-            try {
-                List<Ammo> list = service.fetchAmmos(20, page);
-
-                // Cache the result
-                pageCache.put(page, list);
-
-                Platform.runLater(() -> {
-                    displayAmmos(list);
-                    currentPage = page;
-                    updatePaginationControls();
-                });
-            } catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, "Failed to fetch ammos", ex);
-                Platform.runLater(() -> {
-                    contentFlow.getChildren().clear();
-                    contentFlow.getChildren().add(createErrorLabel("Failed to load ammos."));
-                    setNextDisabled(false);
-                });
-            }
-        }).start();
+        return service.fetchAmmos(limit, page);
     }
 
-    private void displayAmmos(List<Ammo> list) {
-        contentFlow.getChildren().clear();
-
-        if (list == null || list.isEmpty()) {
-            contentFlow.getChildren().add(createErrorLabel("No items found."));
-            return;
-        }
-
-        for (Ammo ammo : list) {
-            Node card = createCard(ammo);
-            contentFlow.getChildren().add(card);
-        }
-    }
-
-    private void updatePaginationControls() {
-        setPreviousDisabled(currentPage == 0);
-        setPageLabel(currentPage);
-
-        // Enable next button if current page has items
-        List<Ammo> currentPageData = pageCache.get(currentPage);
-        setNextDisabled(currentPageData == null || currentPageData.isEmpty() || currentPageData.size() < 20);
-    }
-
-    private void loadPreviousPage() {
-        if (currentPage > 0) {
-            loadPage(currentPage - 1);
-        }
-    }
-
-    private void loadNextPage() {
-        loadPage(currentPage + 1);
-    }
-
-    private Node createCard(Ammo ammo) {
-        Node wrapper = createImageCard(ammo.getImage(), ammo.getName());
-        wrapper.setOnMouseClicked(evt -> navigator.setCenter(new AmmoDetailScreen(navigator, ammo).getView()));
+    @Override
+    protected Node createItemCard(AmmoBase item) {
+        Node wrapper = createImageCard(item.getImageUrl(), item.getDisplayName());
+        wrapper.setOnMouseClicked(evt -> navigator.setCenter(new AmmoDetailScreen(navigator, item).getView()));
         return wrapper;
-    }
-
-    public Node getView() {
-        return this;
     }
 }
