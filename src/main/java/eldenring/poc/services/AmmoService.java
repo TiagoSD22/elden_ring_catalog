@@ -2,7 +2,6 @@ package eldenring.poc.services;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import eldenring.poc.models.Ammo;
 import eldenring.poc.models.AmmoBase;
 import eldenring.poc.scrapers.AmmoScraper;
 
@@ -36,10 +35,10 @@ public class AmmoService {
      * @param page Page number (0-based)
      * @return List of Ammo objects for the requested page
      */
-    public List<Ammo> fetchAmmos(int limit, int page) {
+    public List<AmmoBase> fetchAmmos(int limit, int page) {
         try {
             String pageKey = buildPageKey(page);
-            List<Ammo> cachedPage = (List<Ammo>) cache.getIfPresent(pageKey);
+            List<AmmoBase> cachedPage = (List<AmmoBase>) cache.getIfPresent(pageKey);
 
             if (cachedPage != null) {
                 LOGGER.info("Returning cached data for page " + page + " (size: " + limit + ")");
@@ -58,7 +57,7 @@ public class AmmoService {
 
             cacheAllPagesInChunks(allAmmos, limit);
 
-            List<Ammo> result = (List<Ammo>) cache.getIfPresent(pageKey);
+            List<AmmoBase> result = (List<AmmoBase>) cache.getIfPresent(pageKey);
 
             return result;
         } catch (Exception e) {
@@ -85,18 +84,9 @@ public class AmmoService {
 
             List<AmmoBase> pageAmmos = allAmmos.subList(startIndex, endIndex);
 
-            // Convert AmmoBase to Ammo
-            List<Ammo> pageResult = new ArrayList<>();
-            for (AmmoBase base : pageAmmos) {
-                Ammo ammo = new Ammo();
-                ammo.setName(base.getName());
-                ammo.setImage(base.getImage());
-                pageResult.add(ammo);
-            }
-
             String pageKey = buildPageKey(pageNum);
-            cache.put(pageKey, pageResult);
-            LOGGER.fine("Cached page " + pageNum + " with " + pageResult.size() + " items");
+            cache.put(pageKey, pageAmmos);
+            LOGGER.fine("Cached page " + pageNum + " with " + pageAmmos.size() + " items");
         }
 
         LOGGER.info("Successfully cached all " + totalPages + " pages");
