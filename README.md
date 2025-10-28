@@ -2,14 +2,25 @@
 
 A JavaFX desktop application for browsing and exploring Elden Ring game items, including ammo, armor, ashes of war, and more. The application features a beautiful UI with background imagery from the game and uses web scraping to fetch real-time data from the Fextralife wiki.
 
-![Elden Ring Catalog - Armor View](armor-screen.png)
-*Browse through all armor sets in the game*
+## Screenshots
 
-![Elden Ring Catalog - Ashes of War](ashes-of-war-screen.png)
-*Explore all Ashes of War with their icons*
+<p>
+  <img src="armor-screen.png" alt="Armor View" width="800"/>
+  <br/>
+  <em>Browse through all armor sets in the game</em>
+</p>
 
-![Elden Ring Catalog - Ammo](ammo-screen.png)
-*View all arrows and bolts available in the game*
+<p>
+  <img src="ashes-of-war-screen.png" alt="Ashes of War" width="800"/>
+  <br/>
+  <em>Explore all Ashes of War with their icons</em>
+</p>
+
+<p >
+  <img src="ammo-screen.png" alt="Ammo View" width="800"/>
+  <br/>
+  <em>View all arrows and bolts available in the game</em>
+</p>
 
 ## Features
 
