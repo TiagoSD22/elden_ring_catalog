@@ -106,7 +106,6 @@ public abstract class BaseScreen extends BorderPane {
         ImageView iv = new ImageView();
         iv.getStyleClass().add("item-image");
         iv.setPreserveRatio(true);
-        // set fallbacks for size; CSS can also influence these
         iv.setFitWidth(Math.max(80, prefWidth - 40));
         iv.setFitHeight(Math.max(80, prefHeight - 80));
         try {
