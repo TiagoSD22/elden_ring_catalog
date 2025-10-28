@@ -1,12 +1,10 @@
 package eldenring.poc.models;
 
-import java.io.Serializable;
-
 /**
  * Basic ammo information scraped from the wiki gallery.
  * Contains only image and name for the listing view.
  */
-public class AmmoBase implements Serializable {
+public class AmmoBase extends BaseModel {
     private static final long serialVersionUID = 1L;
 
     private String name;
@@ -33,6 +31,16 @@ public class AmmoBase implements Serializable {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return name;
+    }
+
+    @Override
+    public String getImageUrl() {
+        return image;
     }
 
     @Override
