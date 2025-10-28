@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import eldenring.poc.models.Ammo;
 import eldenring.poc.models.AmmoBase;
+import eldenring.poc.scrapers.AmmoScraper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +22,7 @@ public class AmmoService {
     private static final String CACHE_KEY_PAGE_PREFIX = "ammo/page/";
 
     private final AmmoScraper scraper = new AmmoScraper();
-    
+
     private static final Cache<String, Object> cache = Caffeine.newBuilder()
             .expireAfterWrite(30, TimeUnit.MINUTES)
             .maximumSize(100)
@@ -37,7 +38,6 @@ public class AmmoService {
      */
     public List<Ammo> fetchAmmos(int limit, int page) {
         try {
-            // Check if we have cached data for this specific page with this limit
             String pageKey = buildPageKey(page);
             List<Ammo> cachedPage = (List<Ammo>) cache.getIfPresent(pageKey);
 
@@ -46,7 +46,6 @@ public class AmmoService {
                 return cachedPage;
             }
 
-            // Cache miss - need to scrape data
             LOGGER.info("Cache miss for page " + page + " - scraping ammo data from wiki...");
             List<AmmoBase> allAmmos = scraper.scrapeAmmos();
 
@@ -57,10 +56,8 @@ public class AmmoService {
 
             LOGGER.info("Scraped " + allAmmos.size() + " ammo items");
 
-            // Pre-split into pages and cache each chunk
             cacheAllPagesInChunks(allAmmos, limit);
 
-            // Return the requested page from cache
             List<Ammo> result = (List<Ammo>) cache.getIfPresent(pageKey);
 
             return result;
@@ -86,7 +83,6 @@ public class AmmoService {
             int startIndex = pageNum * pageSize;
             int endIndex = Math.min(startIndex + pageSize, totalItems);
 
-            // Get the page subset
             List<AmmoBase> pageAmmos = allAmmos.subList(startIndex, endIndex);
 
             // Convert AmmoBase to Ammo
@@ -95,12 +91,9 @@ public class AmmoService {
                 Ammo ammo = new Ammo();
                 ammo.setName(base.getName());
                 ammo.setImage(base.getImage());
-                // Note: Other fields (description, type, attackPower, passive) would need
-                // additional scraping from individual item pages if needed
                 pageResult.add(ammo);
             }
 
-            // Cache this page chunk
             String pageKey = buildPageKey(pageNum);
             cache.put(pageKey, pageResult);
             LOGGER.fine("Cached page " + pageNum + " with " + pageResult.size() + " items");
