@@ -5,19 +5,19 @@ A JavaFX desktop application for browsing and exploring Elden Ring game items, i
 ## Screenshots
 
 <p>
-  <img src="armor-screen.png" alt="Armor View" width="800"/>
+  <img src="ui-preview/armor-screen.png" alt="Armor View" width="800"/>
   <br/>
   <em>Browse through all armor sets in the game</em>
 </p>
 
 <p>
-  <img src="ashes-of-war-screen.png" alt="Ashes of War" width="800"/>
+  <img src="ui-preview/ashes-of-war-screen.png" alt="Ashes of War" width="800"/>
   <br/>
   <em>Explore all Ashes of War with their icons</em>
 </p>
 
 <p >
-  <img src="ammo-screen.png" alt="Ammo View" width="800"/>
+  <img src="ui-preview/ammo-screen.png" alt="Ammo View" width="800"/>
   <br/>
   <em>View all arrows and bolts available in the game</em>
 </p>
