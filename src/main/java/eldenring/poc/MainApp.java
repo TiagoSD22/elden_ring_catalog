@@ -16,7 +16,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import eldenring.poc.navigation.AppNavigator;
-import eldenring.poc.screens.AmmoScreen;
+import eldenring.poc.navigation.ScreenFactory;
 
 import java.net.URL;
 import javafx.scene.Node;
@@ -25,6 +25,7 @@ import javafx.geometry.Insets;
 public class MainApp extends Application {
 
     private AppNavigator navigator;
+    private ScreenFactory screenFactory;
 
     @Override
     public void start(Stage primaryStage) {
@@ -62,15 +63,13 @@ public class MainApp extends Application {
         root.setCenter(overlay);
 
         navigator = new AppNavigator(contentContainer);
+        screenFactory = new ScreenFactory();
 
         tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
             if (newTab == null) return;
-            String title = newTab.getText();
-            if ("Ammos".equals(title)) {
-                navigator.setCenter(new AmmoScreen(navigator).getView());
-            } else {
-                navigator.replaceCenter(new Label(""));
-            }
+            String tabName = newTab.getText();
+            Node screen = screenFactory.getScreen(tabName, navigator);
+            navigator.setCenter(screen);
         });
 
         Scene scene = new Scene(root);
