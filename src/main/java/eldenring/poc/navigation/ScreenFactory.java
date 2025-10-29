@@ -3,6 +3,7 @@ package eldenring.poc.navigation;
 import eldenring.poc.screens.AmmoScreen;
 import eldenring.poc.screens.ArmorScreen;
 import eldenring.poc.screens.AshesOfWarScreen;
+import eldenring.poc.screens.SorceryScreen;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 
@@ -24,6 +25,7 @@ public class ScreenFactory {
         screenCreators.put("Ammos", nav -> new AmmoScreen(nav).getView());
         screenCreators.put("Armors", nav -> new ArmorScreen(nav).getView());
         screenCreators.put("Ashes of War", nav -> new AshesOfWarScreen(nav).getView());
+        screenCreators.put("Sorceries", nav -> new SorceryScreen(nav).getView());
     }
 
     /**
