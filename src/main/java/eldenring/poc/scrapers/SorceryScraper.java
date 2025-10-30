@@ -46,7 +46,7 @@ public class SorceryScraper extends BaseScraper {
             List<WebElement> rows = driver.findElements(By.cssSelector("div.row"));
 
             for (WebElement row : rows) {
-                List<WebElement> cols = row.findElements(By.cssSelector("div[class*='col']"));
+                List<WebElement> cols = row.findElements(By.cssSelector("div[class*='col-sm-3']"));
 
                 for (WebElement col : cols) {
                     try {
