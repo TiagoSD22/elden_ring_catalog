@@ -6,6 +6,7 @@ import eldenring.poc.screens.AshesOfWarScreen;
 import eldenring.poc.screens.ClassScreen;
 import eldenring.poc.screens.IncantationScreen;
 import eldenring.poc.screens.SorceryScreen;
+import eldenring.poc.screens.SpiritScreen;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 
@@ -29,6 +30,7 @@ public class ScreenFactory {
         screenCreators.put("Classes", nav -> new ClassScreen(nav).getView());
         screenCreators.put("Incantations", nav -> new IncantationScreen(nav).getView());
         screenCreators.put("Sorceries", nav -> new SorceryScreen(nav).getView());
+        screenCreators.put("Spirits", nav -> new SpiritScreen(nav).getView());
     }
 
     /**
@@ -59,4 +61,3 @@ public class ScreenFactory {
         return screenCreators.containsKey(tabName);
     }
 }
-
