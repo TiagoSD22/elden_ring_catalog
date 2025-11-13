@@ -9,6 +9,7 @@ import eldenring.poc.screens.ShieldScreen;
 import eldenring.poc.screens.SorceryScreen;
 import eldenring.poc.screens.SpiritScreen;
 import eldenring.poc.screens.TalismanScreen;
+import eldenring.poc.screens.WeaponCategoryScreen;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 
@@ -35,6 +36,7 @@ public class ScreenFactory {
         screenCreators.put("Sorceries", nav -> new SorceryScreen(nav).getView());
         screenCreators.put("Spirits", nav -> new SpiritScreen(nav).getView());
         screenCreators.put("Talismans", nav -> new TalismanScreen(nav).getView());
+        screenCreators.put("Weapons", nav -> new WeaponCategoryScreen(nav).getView());
     }
 
     /**
