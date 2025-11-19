@@ -1,33 +1,22 @@
 package eldenring.poc.services;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import eldenring.poc.models.ArmorBase;
 import eldenring.poc.scrapers.ArmorScraper;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Service for fetching and caching armor data.
- * Uses web scraping to extract data from Fextralife wiki and caches results.
- */
-public class ArmorService {
+public class ArmorService extends BaseService {
     private static final Logger LOGGER = Logger.getLogger(ArmorService.class.getName());
     private static final String CACHE_KEY_PAGE_PREFIX = "armor/page/";
 
     private final ArmorScraper scraper = new ArmorScraper();
 
-    // Singleton cache shared across all ArmorService instances to survive tab switches
-    // Key format: "armor/page/{pageNumber}" for paginated data
-    private static final Cache<String, Object> cache = Caffeine.newBuilder()
-            .expireAfterWrite(30, TimeUnit.MINUTES)
-            .maximumSize(100)
-            .build();
+    public ArmorService() {
+        super(LOGGER);
+    }
 
     /**
      * Fetches armors for the specified page with pagination.
@@ -39,8 +28,8 @@ public class ArmorService {
      */
     public List<ArmorBase> fetchArmors(int limit, int page) {
         try {
-            String pageKey = buildPageKey(page);
-            List<ArmorBase> cachedPage = (List<ArmorBase>) cache.getIfPresent(pageKey);
+            String pageKey = buildPageKey(CACHE_KEY_PAGE_PREFIX, page);
+            List<ArmorBase> cachedPage = getCachedPage(pageKey);
 
             if (cachedPage != null) {
                 LOGGER.info("Returning cached data for page " + page + " (size: " + limit + ")");
@@ -57,9 +46,9 @@ public class ArmorService {
 
             LOGGER.info("Scraped " + allArmors.size() + " armor items");
 
-            cacheAllPagesInChunks(allArmors, limit);
+            cacheAllPagesInChunks(allArmors, limit, CACHE_KEY_PAGE_PREFIX);
 
-            List<ArmorBase> result = (List<ArmorBase>) cache.getIfPresent(pageKey);
+            List<ArmorBase> result = getCachedPage(pageKey);
             if (result == null) {
                 LOGGER.warning("Requested page still not found in cache after caching attempt: " + pageKey);
                 return Collections.emptyList();
@@ -71,49 +60,4 @@ public class ArmorService {
             return Collections.emptyList();
         }
     }
-
-    /**
-     * Splits the complete armor list into page-sized chunks and caches each page.
-     *
-     * @param allArmors Complete list of scraped armor data
-     * @param pageSize Number of items per page
-     */
-    private void cacheAllPagesInChunks(List<ArmorBase> allArmors, int pageSize) {
-        int totalItems = allArmors.size();
-        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
-
-        LOGGER.info("Splitting " + totalItems + " items into " + totalPages + " pages (size: " + pageSize + ")");
-
-        for (int pageNum = 0; pageNum < totalPages; pageNum++) {
-            int startIndex = pageNum * pageSize;
-            int endIndex = Math.min(startIndex + pageSize, totalItems);
-
-            List<ArmorBase> pageArmors = allArmors.subList(startIndex, endIndex);
-
-            String pageKey = buildPageKey(pageNum);
-            cache.put(pageKey, pageArmors);
-            LOGGER.fine("Cached page " + pageNum + " with " + pageArmors.size() + " items");
-        }
-
-        LOGGER.info("Successfully cached all " + totalPages + " pages");
-    }
-
-    /**
-     * Builds a cache key for a specific page.
-     *
-     * @param pageNumber Page number (0-based)
-     * @return Cache key in format "armor/page/{pageNumber}"
-     */
-    private String buildPageKey(int pageNumber) {
-        return CACHE_KEY_PAGE_PREFIX + pageNumber;
-    }
-
-    /**
-     * Clears the cache, forcing a fresh scrape on next request.
-     */
-    public void clearCache() {
-        cache.invalidateAll();
-        LOGGER.info("Cache cleared");
-    }
 }
-
