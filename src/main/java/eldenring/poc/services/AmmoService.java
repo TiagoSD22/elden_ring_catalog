@@ -1,31 +1,22 @@
 package eldenring.poc.services;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import eldenring.poc.models.AmmoBase;
 import eldenring.poc.scrapers.AmmoScraper;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Service for fetching and caching ammo data.
- * Uses web scraping to extract data from Fextralife wiki and caches results.
- */
-public class AmmoService {
+public class AmmoService extends BaseService {
     private static final Logger LOGGER = Logger.getLogger(AmmoService.class.getName());
     private static final String CACHE_KEY_PAGE_PREFIX = "ammo/page/";
 
     private final AmmoScraper scraper = new AmmoScraper();
 
-    private static final Cache<String, Object> cache = Caffeine.newBuilder()
-            .expireAfterWrite(30, TimeUnit.MINUTES)
-            .maximumSize(100)
-            .build();
+    public AmmoService() {
+        super(LOGGER);
+    }
 
     /**
      * Fetches ammos for the specified page with pagination.
@@ -37,8 +28,8 @@ public class AmmoService {
      */
     public List<AmmoBase> fetchAmmos(int limit, int page) {
         try {
-            String pageKey = buildPageKey(page);
-            List<AmmoBase> cachedPage = (List<AmmoBase>) cache.getIfPresent(pageKey);
+            String pageKey = buildPageKey(CACHE_KEY_PAGE_PREFIX, page);
+            List<AmmoBase> cachedPage = getCachedPage(pageKey);
 
             if (cachedPage != null) {
                 LOGGER.info("Returning cached data for page " + page + " (size: " + limit + ")");
@@ -55,58 +46,12 @@ public class AmmoService {
 
             LOGGER.info("Scraped " + allAmmos.size() + " ammo items");
 
-            cacheAllPagesInChunks(allAmmos, limit);
+            cacheAllPagesInChunks(allAmmos, limit, CACHE_KEY_PAGE_PREFIX);
 
-            List<AmmoBase> result = (List<AmmoBase>) cache.getIfPresent(pageKey);
-
-            return result;
+            return getCachedPage(pageKey);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to fetch ammos", e);
             return Collections.emptyList();
         }
-    }
-
-    /**
-     * Splits the complete ammo list into page-sized chunks and caches each page.
-     *
-     * @param allAmmos Complete list of scraped ammo data
-     * @param pageSize Number of items per page
-     */
-    private void cacheAllPagesInChunks(List<AmmoBase> allAmmos, int pageSize) {
-        int totalItems = allAmmos.size();
-        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
-
-        LOGGER.info("Splitting " + totalItems + " items into " + totalPages + " pages (size: " + pageSize + ")");
-
-        for (int pageNum = 0; pageNum < totalPages; pageNum++) {
-            int startIndex = pageNum * pageSize;
-            int endIndex = Math.min(startIndex + pageSize, totalItems);
-
-            List<AmmoBase> pageAmmos = allAmmos.subList(startIndex, endIndex);
-
-            String pageKey = buildPageKey(pageNum);
-            cache.put(pageKey, pageAmmos);
-            LOGGER.fine("Cached page " + pageNum + " with " + pageAmmos.size() + " items");
-        }
-
-        LOGGER.info("Successfully cached all " + totalPages + " pages");
-    }
-
-    /**
-     * Builds a cache key for a specific page.
-     *
-     * @param pageNumber Page number (0-based)
-     * @return Cache key in format "ammo/page/{pageNumber}"
-     */
-    private String buildPageKey(int pageNumber) {
-        return CACHE_KEY_PAGE_PREFIX  + pageNumber;
-    }
-
-    /**
-     * Clears the cache, forcing a fresh scrape on next request.
-     */
-    public void clearCache() {
-        cache.invalidateAll();
-        LOGGER.info("Cache cleared");
     }
 }
