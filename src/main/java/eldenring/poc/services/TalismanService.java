@@ -1,31 +1,27 @@
 package eldenring.poc.services;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import eldenring.poc.models.TalismanBase;
 import eldenring.poc.scrapers.TalismanScraper;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class TalismanService {
+public class TalismanService extends BaseService {
     private static final Logger LOGGER = Logger.getLogger(TalismanService.class.getName());
     private static final String CACHE_KEY_PAGE_PREFIX = "talisman/page/";
 
     private final TalismanScraper scraper = new TalismanScraper();
 
-    private static final Cache<String, Object> cache = Caffeine.newBuilder()
-            .expireAfterWrite(30, TimeUnit.MINUTES)
-            .maximumSize(100)
-            .build();
+    public TalismanService() {
+        super(LOGGER);
+    }
 
     public List<TalismanBase> fetchTalismans(int limit, int page) {
         try {
-            String pageKey = buildPageKey(page);
-            List<TalismanBase> cachedPage = (List<TalismanBase>) cache.getIfPresent(pageKey);
+            String pageKey = buildPageKey(CACHE_KEY_PAGE_PREFIX, page);
+            List<TalismanBase> cachedPage = getCachedPage(pageKey);
 
             if (cachedPage != null) {
                 LOGGER.info("Returning cached data for page " + page + " (size: " + limit + ")");
@@ -42,9 +38,9 @@ public class TalismanService {
 
             LOGGER.info("Scraped " + allTalismans.size() + " talisman items");
 
-            cacheAllPagesInChunks(allTalismans, limit);
+            cacheAllPagesInChunks(allTalismans, limit, CACHE_KEY_PAGE_PREFIX);
 
-            List<TalismanBase> result = (List<TalismanBase>) cache.getIfPresent(pageKey);
+            List<TalismanBase> result = getCachedPage(pageKey);
             if (result == null) {
                 LOGGER.warning("Requested page still not found in cache after caching attempt: " + pageKey);
                 return Collections.emptyList();
@@ -56,34 +52,4 @@ public class TalismanService {
             return Collections.emptyList();
         }
     }
-
-    private void cacheAllPagesInChunks(List<TalismanBase> allTalismans, int pageSize) {
-        int totalItems = allTalismans.size();
-        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
-
-        LOGGER.info("Splitting " + totalItems + " items into " + totalPages + " pages (size: " + pageSize + ")");
-
-        for (int pageNum = 0; pageNum < totalPages; pageNum++) {
-            int startIndex = pageNum * pageSize;
-            int endIndex = Math.min(startIndex + pageSize, totalItems);
-
-            List<TalismanBase> pageTalismans = allTalismans.subList(startIndex, endIndex);
-
-            String pageKey = buildPageKey(pageNum);
-            cache.put(pageKey, pageTalismans);
-            LOGGER.fine("Cached page " + pageNum + " with " + pageTalismans.size() + " items");
-        }
-
-        LOGGER.info("Successfully cached all " + totalPages + " pages");
-    }
-
-    private String buildPageKey(int pageNumber) {
-        return CACHE_KEY_PAGE_PREFIX + pageNumber;
-    }
-
-    public void clearCache() {
-        cache.invalidateAll();
-        LOGGER.info("Cache cleared");
-    }
 }
-
