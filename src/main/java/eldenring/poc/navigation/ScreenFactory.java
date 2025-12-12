@@ -4,6 +4,7 @@ import eldenring.poc.screens.AmmoScreen;
 import eldenring.poc.screens.ArmorScreen;
 import eldenring.poc.screens.AshesOfWarScreen;
 import eldenring.poc.screens.ClassScreen;
+import eldenring.poc.screens.CreaturesScreen;
 import eldenring.poc.screens.IncantationScreen;
 import eldenring.poc.screens.ItemScreen;
 import eldenring.poc.screens.ShieldScreen;
@@ -32,6 +33,7 @@ public class ScreenFactory {
         screenCreators.put("Armors", nav -> new ArmorScreen(nav).getView());
         screenCreators.put("Ashes of War", nav -> new AshesOfWarScreen(nav).getView());
         screenCreators.put("Classes", nav -> new ClassScreen(nav).getView());
+        screenCreators.put("Creatures", nav -> new CreaturesScreen(nav).getView());
         screenCreators.put("Incantations", nav -> new IncantationScreen(nav).getView());
         screenCreators.put("Shields", nav -> new ShieldScreen(nav).getView());
         screenCreators.put("Sorceries", nav -> new SorceryScreen(nav).getView());
